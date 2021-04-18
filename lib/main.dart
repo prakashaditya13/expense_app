@@ -17,12 +17,16 @@ class MyApp extends StatelessWidget {
       title: 'Personal Expenses',
       theme: ThemeData(
           primarySwatch: Colors.deepPurple,
+          errorColor: Colors.red,
           accentColor: Colors.amber,
           fontFamily: 'Quicksand',
           // ignore: deprecated_member_use
           textTheme: ThemeData.light().textTheme.copyWith(
               title: TextStyle(
-                  fontFamily: 'OpenSans', fontWeight: FontWeight.bold))),
+                  fontFamily: 'OpenSans', fontWeight: FontWeight.bold),
+                  button: TextStyle(color: Colors.white),
+                  ),
+                  ),
       home: MyHomePage(),
     );
   }
@@ -49,11 +53,11 @@ class _MyHomePageState extends State<MyHomePage> {
     }).toList();
   }
 
-  void _addNewTransaction(String txtitle, double txamount) {
+  void _addNewTransaction(String txtitle, double txamount, DateTime chosenDate) {
     final newTx = Transaction(
         title: txtitle,
         amount: txamount,
-        date: DateTime.now(),
+        date: chosenDate,
         id: DateTime.now().toString());
     setState(() {
       _userTransactions.add(newTx);
@@ -69,6 +73,12 @@ class _MyHomePageState extends State<MyHomePage> {
               child: NewTransaction(_addNewTransaction),
               behavior: HitTestBehavior.opaque);
         });
+  }
+
+  void _deleteTransaction(String id){
+    setState(() {
+        _userTransactions.removeWhere((tx) => tx.id == id);
+    });
   }
 
   @override
@@ -90,7 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Chart(_recentTransactions),
-            TransactionList(_userTransactions)
+            TransactionList(_userTransactions, _deleteTransaction)
           ],
         ),
       ),
